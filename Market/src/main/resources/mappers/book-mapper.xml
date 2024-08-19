@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "file:///C:/Users/seojihee/Documents/workspace-spring-tool-suite-4-4.24.0/Market/src/main/resources/mybatis-3-mapper.dtd">
+<mapper namespace="com.rubypaper.book.BookDao">
+<select id="select">
+    SELECT * FROM book
+    <if test="ch2!=null">
+    WHERE book_name LIKE '%' || #{ch2} || '%'
+    </if>
+    ORDER BY publish_date
+</select>
+
+
+<insert id="insert">
+insert into book (book_idx,book_name,book_photo,writer_name,publish_company,publish_date,book_price,book_title,book_etc,new_amount)
+VALUES (book_idx.nextval,#{book_name},#{book_photo},#{writer_name},#{publish_company},#{publish_date},#{book_price},#{book_title},#{book_etc},#{new_amount})
+</insert>
+
+<select id="edit">
+select * from book where book_idx=#{book_idx}
+</select>
+
+<update id="updateAmount">
+    UPDATE book SET new_amount = new_amount - #{amount} WHERE book_idx = #{book_idx}
+</update>
+
+<select id="top3">
+SELECT 
+    o.book_idx AS book_idx,
+    book_name,
+    book_photo,
+    writer_name,
+    publish_company,
+    publish_date,
+    book_price,
+    book_title,
+    book_etc,
+    is_selected,
+    SUM(amount) AS total_amount
+FROM 
+    book b 
+JOIN 
+    order_tbl o 
+ON 
+    o.book_idx = b.book_idx 
+GROUP BY 
+    o.book_idx, 
+    book_name, 
+    book_photo, 
+    writer_name, 
+    publish_company, 
+    publish_date, 
+    book_price, 
+    book_title, 
+    book_etc,
+    is_selected
+ORDER BY 
+    total_amount DESC
+FETCH FIRST 3 ROWS ONLY
+</select>
+
+<select id="newList">
+select * from book order by publish_date desc FETCH FIRST 10 ROWS ONLY
+</select>
+
+<select id="bestselect">
+  SELECT 
+    o.book_idx AS book_idx,
+    book_name,
+    book_photo,
+    writer_name,
+    publish_company,
+    publish_date,
+    book_price,
+    book_title,
+    book_etc,
+    is_selected,
+    SUM(amount) AS total_amount
+  FROM book b JOIN order_tbl o 
+  ON o.book_idx = b.book_idx 
+  GROUP BY 
+    o.book_idx, 
+    book_name, 
+    book_photo, 
+    writer_name, 
+    publish_company, 
+    publish_date, 
+    book_price, 
+    book_title, 
+    book_etc,
+    is_selected
+  ORDER BY 
+    total_amount DESC
+</select>
+
+
+<delete id="delete">
+delete from book where book_idx=#{book_idx}
+</delete>
+
+<update id="update">
+update book set book_name=#{book_name},book_photo=#{book_photo},writer_name=#{writer_name},publish_company=#{publish_company},publish_date=#{publish_date},
+book_price=#{book_price},book_title=#{book_title},book_etc=#{book_etc},new_amount=#{new_amount} where book_idx=#{book_idx}
+</update>
+
+<update id="update_edit">
+update book set book_name=#{book_name},writer_name=#{writer_name},publish_company=#{publish_company},publish_date=#{publish_date},
+book_price=#{book_price},book_title=#{book_title},book_etc=#{book_etc},new_amount=#{new_amount} where book_idx=#{book_idx}
+</update>
+
+<select id="categories">
+SELECT book_idx,PUBLISH_COMPANY,book_name,BOOK_PHOTO,is_selected,PUBLISH_DATE,b.category_id, b.book_title, b.writer_name, b.book_price, c.name AS category
+        FROM book b
+        JOIN categories c ON b.category_id = c.id
+        WHERE c.name = #{name}
+</select>
+
+<update id="update_add">
+update book set is_selected='Y' where book_idx=#{book_idx}
+</update>
+
+<update id="update_remove">
+update book set is_selected='N' where book_idx=#{book_idx}
+</update>
+
+</mapper>

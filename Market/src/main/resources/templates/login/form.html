@@ -1,0 +1,24 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <div th:replace="include/top"></div>
+    <section>
+    <br>
+        <div class="login-container">
+            <h2>로그인</h2>
+            <form method="post" >
+                <input type="text" name="username" placeholder="아이디를 입력해 주세요." required>
+                <input type="password" name="password" placeholder="비밀번호를 입력해 주세요." required>
+                <input type="submit" value="로그인">
+            	<input type="button" value="회원가입" onclick="joinK()">
+            </form>
+        </div>
+        <br>
+    </section>
+    <div th:replace="include/bottom::footer"></div>
+</body>
+</html>
+<script type="text/javascript">
+function joinK(){
+	location.href="/member/form";
+}
+</script>

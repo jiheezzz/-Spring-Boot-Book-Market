@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "file:///C:/Users/seojihee/Documents/workspace-spring-tool-suite-4-4.24.0/Market/src/main/resources/mybatis-3-mapper.dtd">
+<mapper namespace="com.rubypaper.member.MemberDao">
+<insert id="insert">
+insert into member(username,password,birth_year,birth_month,birth_day,phone,name,gender,addr1,addr2,addr3,role,regdate)
+values(#{username},#{password},#{birth_year},#{birth_month},#{birth_day},#{phone},#{name},#{gender},#{addr1},#{addr2},#{addr3},'ROLE_USER',sysdate)
+</insert>
+
+<select id="select">
+select * from member
+</select>
+
+<select id="edit">
+select * from member where username=#{username}
+</select>
+
+<update id="update">
+UPDATE member SET role=#{role}, etc=#{etc} WHERE username=#{username}
+</update>
+
+<delete id="deleteUser" parameterType="String">
+    DELETE FROM member WHERE username = #{username}
+</delete>
+
+<update id="updateUser">
+UPDATE member SET name=#{name},phone=#{phone},addr1=#{addr1},addr2=#{addr2},addr3=#{addr3},password=#{password}
+WHERE username=#{username}
+</update>
+    
+<select id="selectUser">
+select * from member where username=#{username}
+</select>
+
+
+
+
+</mapper>

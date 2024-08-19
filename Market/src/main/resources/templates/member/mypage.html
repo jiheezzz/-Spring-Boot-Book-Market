@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:replace="include/top"></div>
+
+<section>
+<div class=mypage>
+    <h1>My Page</h1>
+    <ul>
+        <!-- li 리스트에 있는 모든 회원 정보를 출력 -->
+        <li th:each="member : ${li}">
+            <p>이름: <span th:text="${member.name}"></span></p>
+            <p>생년월일: <span th:text="${member.birth_year}+'/'+${member.birth_month}+'/'+${member.birth_day}"></span></p>
+            <p>주소: <span th:text="${member.addr2}+' '+${member.addr3}+'('+${member.addr1}+')'"></span></p>
+            <!-- 각 member의 전화번호를 표시 -->
+            <p>전화번호: <span th:text="${member.phone}"></span></p>
+        </li>
+    </ul>
+    	<div class="button-container">
+   		<form th:action="@{/member/userEdit}">
+            <button type="submit" >회원정보수정</button>
+        </form>
+        <br>
+        <form th:action="@{/member/userDelete}" >
+            <button type="submit" >회원탈퇴</button>
+        </form>
+        </div>
+
+    
+    </div>
+</section>
+
+<div th:replace="include/bottom::footer"></div>
+</body>
+</html>

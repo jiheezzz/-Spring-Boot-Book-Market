@@ -1,0 +1,136 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:replace="include/top"></div>
+<section>
+<br>
+<style>
+    .button2 {
+        background-color: white; /* 파란색 배경 */
+        border: 2px solid #0056b3;
+        color: #0056b3;
+        padding: 1px 5px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 15px;
+        margin: 4px 2px;
+        transition-duration: 0.4s;
+        cursor: pointer;
+    }
+    
+    .button2:hover {
+        background-color: white; /* 마우스 오버 시 배경색 변경 */
+        color: black;
+        border: 2px solid black; 
+    }
+    .button {
+        background-color: white; /* 파란색 배경 */
+        border: 2px solid #0056b3;
+        color: #0056b3;
+        padding: 3px 8px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        transition-duration: 0.4s;
+        cursor: pointer;
+    }
+
+    .button:hover {
+        background-color: white; /* 마우스 오버 시 배경색 변경 */
+        color: black;
+        border: 2px solid black; /* 파란 테두리 */
+    }
+    
+     .input-number {
+        width: 60px;
+        padding: 5px 150px;
+        margin: 10px 0;
+        box-sizing: border-box;
+        border: 2px solid #0056b3;
+        border-radius: 4px;
+        background-color: #f9f9f9;
+        font-size: 16px;
+        text-align: center;
+    }
+    
+    select[name="ch1"] {
+        padding: 4px;
+        font-size: 14px;
+        border: 2px solid #0056b3;
+        border-radius: 4px;
+        margin-right: 10px;
+    }
+</style>
+<div align="center">
+
+<h1>목록보기</h1>
+
+<form action="/review/list">
+    <input type="hidden" name="start" th:value="${start}">
+    <input type="hidden" name="end" th:value="${end}">
+    <select name="ch1">
+      <option value="name">이름</option>
+      <option value="memo">글</option>
+    </select>
+    <input class="input-number" type="text" name="ch2">
+    <button type="button" class="button">검색하기</button>
+</form>
+
+<table>
+<tr><th>번호</th><th>이름</th><th>나이</th><th>책제목</th><th>글</th><th>작성일</th></tr>
+<tr th:each="m : ${li}">
+<td th:text="${m.idx}"></td>
+<td><a th:href="@{/review/edit(idx=${m.idx})}" th:text="${m.name}"></a></td>
+<td th:text="${m.age}"></td>
+<td th:text="${m.book_name}"></td>
+<td th:text="${m.title}"></td>
+<td th:text="${m.regdate}"></td>
+</tr>
+<tr th:each="m, iterStat : ${li}">
+    <td>
+        <!-- 첫 번째 항목에만 새 리뷰 작성 링크를 표시 -->
+        <a th:if="${iterStat.index == 0}" th:href="@{/review/form(book_idx=${m.book_idx}, book_name=${m.book_name})}" class="button2">새 리뷰 작성</a>
+    </td>
+</tr>
+</table>
+
+<div class="pagination">
+    <a th:href="@{/review/list(ch1=${ch1}, ch2=${ch2}, start=1, end=${pageSize})}">처음으로</a>
+
+    <div th:if="${listStartPage > pageListSize}">
+        <a th:href="@{/review/list(ch1=${ch1}, ch2=${ch2}, start=${(listStartPage - pageListSize - 1) * pageSize + 1},
+         end=${(listStartPage - pageListSize - 1) * pageSize + pageSize})}">
+            이전
+        </a>
+    </div>
+    <div th:if="${listStartPage <= pageListSize}"></div>
+
+    <div th:each="i : ${#numbers.sequence(listStartPage, listEndPage)}">
+        <div th:if="${i <= totalPage}">
+            <a th:href="@{/review/list(ch1=${ch1}, ch2=${ch2}, start=${(i - 1) * pageSize + 1}, 
+            end=${(i - 1) * pageSize + pageSize})}">
+                <span th:text="${i}" th:classappend="${nowPage == i} ? 'current-page'"></span>
+            </a>
+        </div>
+    </div>
+
+    <div th:if="${listEndPage < totalPage}">
+        <a th:href="@{/review/list(ch1=${ch1}, ch2=${ch2}, start=${listEndPage * pageSize + 1},
+         end=${listEndPage * pageSize + pageSize})}">
+            다음
+        </a>
+    </div>
+    <div th:if="${listEndPage >= totalPage}"></div>
+
+    <a th:href="@{/review/list(ch1=${ch1}, ch2=${ch2}, start=${endPage}, end=${endPage + pageSize - 1})}">마지막으로</a>
+</div>
+
+<br>
+<br>
+<br>
+</section>
+<div th:replace="include/bottom::footer"></div>
+</body>
+</html>

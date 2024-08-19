@@ -1,0 +1,19 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+<div  th:replace="include/top"></div>
+<section>
+<br>
+<div align="center">
+        <!-- 세션에서 username 가져오기 -->
+        <h1 th:if="${username} != null"
+            th:text="'안녕하세요, ' + ${username} + '님!'"></h1>
+        <h1 th:if="${username} == null"
+            th:text="'로그인이 필요합니다.'"></h1>
+</div>
+<br>
+</section>
+
+<div  th:replace="include/bottom::footer"></div>
+</body>
+</html>

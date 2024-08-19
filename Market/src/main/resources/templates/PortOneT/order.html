@@ -1,0 +1,30 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+<div  th:replace="include/top"></div>
+<section>
+<br>
+<div align="center">
+<h2>결제 내역</h2>
+<table>
+<tr>
+<th>주문번호</th><th>이름</th><th>전화번호</th><th>주소</th><th>아이디</th><th>상품</th><th>구매처</th><th>구매날짜</th><th>결제금액</th>
+</tr>
+<tr th:each="m:${orderList}">
+<td th:text="${m.mpaynum}"></td>
+<td th:text="${m.name}"></td>
+<td th:text="${m.phone}"></td>
+<td th:text="${m.addr2+' '+m.addr3+'('+m.addr1+')'}"></td>
+<td th:text="${m.membernum}"></td>
+<td th:text="${m.mpayproduct}"></td>
+<td th:text="${m.mpaygym}"></td>
+<td th:text="${m.mpaydate}"></td>
+<td th:text=" '총 '+${m.mpayprice}+'원'"></td>
+</tr>
+</table>
+</div>
+<br>
+</section>
+<div  th:replace="include/bottom::footer"></div>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Wishlist</title>
+    <style>
+        .wishlist-container {
+            width: 80%;
+            margin: auto;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .wishlist-item {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            padding: 10px 0;
+            align-items: center;
+        }
+        .wishlist-photo img {
+            width: 150px;
+            height: 200px;
+        }
+        .wishlist-info {
+            padding-left: 20px;
+            flex-grow: 1;
+        }
+        .wishlist-info h2 {
+            margin: 0 0 10px;
+            font-size: 1.2em;
+        }
+        .wishlist-info p {
+            margin: 0;
+        }
+        .fixed-buttons {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background-color: white;
+            padding: 10px;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        .fixed-buttons button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .fixed-buttons button:hover {
+            background-color: gray;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="include/top"></div>
+<section>
+    <br>
+    <section class="wishlist-container">
+        <h1>My Wishlist</h1>
+        <form id="wishlistForm" method="post">
+            <div th:each="item : ${li}">
+                <div class="wishlist-item">
+                    <div class="wishlist-photo">
+                        <img th:src="@{'/img/' + ${item.book_photo}}" alt="Book Photo">
+                    </div>
+                    <div class="wishlist-info">
+                        <h2 th:text="${item.book_name}">Book Name</h2>
+                        <p th:text="${item.writer_name} + '/'">Author</p>
+                        <p th:text="${item.publish_company} + '/'">Publisher</p>
+                        <p th:text="${item.publish_date}">Published Date</p>
+                        <p th:text="'Price: ' + ${item.book_price} + '원'">Price</p>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </section>
+    <br>
+</section>
+
+<div th:replace="include/bottom::footer"></div>
+</body>
+</html>

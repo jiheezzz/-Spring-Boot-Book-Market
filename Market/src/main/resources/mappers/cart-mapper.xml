@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "file:///C:/Users/seojihee/Documents/workspace-spring-tool-suite-4-4.24.0/Market/src/main/resources/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.rubypaper.cart.CartDao">
+<insert id="insert">
+INSERT INTO cart (cart_id, amount, username, book_idx)
+VALUES (book_idx.NEXTVAL, #{amount}, 'dyhj625', #{book_idx})
+</insert>
+
+<select id="select">
+SELECT 
+    c.cart_id, 
+    c.book_idx AS book_idx, 
+    b.book_name,
+    b.book_photo, 
+    b.book_price, 
+    c.username, 
+    c.amount,
+    m.addr1, 
+    m.addr2, 
+    m.addr3, 
+    m.name, 
+    m.phone,
+    aa.receive_addr1,
+    aa.receive_addr2,
+    aa.receive_addr3,
+    aa.receive_phone,
+    aa.receive_name
+FROM 
+    cart c
+JOIN 
+    book b ON c.book_idx = b.book_idx
+LEFT JOIN 
+    member m ON c.username = m.username 
+LEFT JOIN 
+    address_addition aa ON c.username = aa.username
+</select>
+<insert id="insertMultiple" parameterType="java.util.List">
+    INSERT INTO cart (user_id, book_id, amount) VALUES (#{user_id}, #{book_id}, #{amount})
+
+</insert>
+<update id="update">
+update cart set amount=#{amount} where cart_id=#{cart_id}
+</update>
+
+<delete id="delete">
+delete from cart where cart_id=#{cart_id}
+</delete>
+
+<delete id="deleteAll">
+delete from cart
+</delete>
+</mapper>

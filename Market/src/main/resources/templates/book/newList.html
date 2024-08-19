@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<style>
+
+</style>
+<head>
+    <title>Book List</title>
+    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="https://cdn.iamport.kr/js/iamport.payment-1.1.7.js"></script>
+    <script th:inline="javascript">
+        var membernum = /*[[${session.username}]]*/ '';
+
+        function toggleWishlist(element, bookIdx) {
+
+            // `data-selected` 값을 가져와 true/false로 확인
+            var isSelected = $(element).data('selected');
+
+            $.ajax({
+                type: "POST",
+                url: "/wishlist/toggle",
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    book_id: bookIdx,
+                    user_id: membernum
+                }),
+                success: function(URL) {
+                    if (isSelected) {
+                        $(element).find('.heart-icon').removeClass('selected').addClass('unselected');
+                        $(element).find('span').last().text('찜하기');
+                        $(element).data('selected', false);
+                        location.href = URL;
+                    } else {
+                        $(element).find('.heart-icon').removeClass('unselected').addClass('selected');
+                        $(element).find('span').last().text('찜 취소');
+                        $(element).data('selected', true);
+                        location.href = URL;
+                    }
+                    alert(isSelected ? "찜이 취소되었습니다." : "찜 목록에 추가되었습니다.");
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    alert("오류가 발생했습니다. 다시 시도해 주세요." + errorThrown);
+                }
+            });
+        }
+
+
+        function directOrder(bookPrice, bookIdx) {
+            if (confirm('정말로 주문하시겠습니까?')) {
+                var totalPaymentAmount = bookPrice + 25; // book_price + 25
+                alert("가격+25:"+totalPaymentAmount);
+				alert(membernum);
+				$(document).ready(function() {
+		            var IMP = window.IMP;
+		            if (IMP) {
+		                IMP.init('imp66012655'); // 가맹점 식별코드
+		            }
+		        });
+                
+                $.get('/PortOneT/generateMpaynum', function(mpaynum) {
+                    if (!mpaynum) {
+                        alert('mpaynum을 생성하는 데 실패했습니다.');
+                        return;
+                    }
+                    alert("mpaynum: "+mpaynum);
+
+                    var cartItems = [{ bookIdx: bookIdx, amount: 1 }];
+                    var cartItemsJson = JSON.stringify(cartItems);
+                    alert("cartItemsJson: "+cartItemsJson);
+
+                    IMP.request_pay({
+                        pg: "html5_inicis",
+                        pay_method: "card",
+                        merchant_uid: mpaynum,
+                        name: "서지희",
+                        amount: totalPaymentAmount,
+                        buyer_email: "wlgml625@naver.com",
+                        buyer_name: "서지희",
+                        buyer_tel: "01034471872"
+                    }, function (rsp) {
+                    	alert("1");
+                        if (rsp.success) {
+                            var result = {
+                                mpaynum: mpaynum,
+                                membernum: membernum,
+                                mpaymethod: rsp.pay_method,
+                                mpayproduct: "도서",
+                                mpayprice: totalPaymentAmount,
+                                mpaydate: new Date().toISOString().slice(0, 10),
+                                mpaygym: "책 쇼핑몰",
+                                mpayperiod: new Date().toISOString().slice(0, 10),
+                                mpaytime: "",
+                                trainername: "",
+                                ggoodsnum: "1001",
+                                tgoodsint: null,
+                                gymnum: "7001",
+                                order: cartItemsJson
+                            };
+							alert(result);
+                            $.ajax({
+                                url: '/PortOneT/insertMPay2',
+                                type: 'POST',
+                                contentType: 'application/json',
+                                data: JSON.stringify(result),
+                                success: function (res) {
+                                    location.href = res;
+                                },
+                                error: function (err) {
+                                    alert("에러 발생: " + JSON.stringify(err));
+                                    location.href = '/PortOneT/fail';
+                                }
+                            });
+                        } else {
+                            alert('결제 실패: ' + rsp.error_msg);
+                            location.href = '/PortOneT/fail';
+                        }
+                    });
+                }).fail(function(jqXHR, textStatus, errorThrown) {
+                    alert('mpaynum 생성 요청 실패: ' + textStatus + ', ' + errorThrown);
+                });
+            }
+        }
+
+        function confirmAddToCart(form) {
+            var confirmAction = confirm("장바구니로 이동하시겠습니까?");
+            if (confirmAction) {
+                $.ajax({
+                    type: "POST",
+                    url: $(form).attr("action"),
+                    data: $(form).serialize(),
+                    success: function(response) {
+                        alert("장바구니에 추가되었습니다.");
+                        window.location.href = "/cart/list";
+                    },
+                    error: function(error) {
+                        alert("장바구니 추가에 실패했습니다.");
+                    }
+                });
+            } else {
+                $.ajax({
+                    type: "POST",
+                    url: $(form).attr("action"),
+                    data: $(form).serialize(),
+                    success: function(response) {
+                        alert("장바구니에 추가되었습니다.");
+                    },
+                    error: function(error) {
+                        alert("장바구니 추가에 실패했습니다.");
+                    }
+                });
+            }
+        }
+    </script>
+</head>
+<body>
+<div th:replace="include/top"></div>
+<section class="container">
+<br>
+<div th:each="book : ${li}" class="book-item">
+    <div class="book-photo">
+        <button type="button" class="wishlist-button" 
+		        th:attr="onclick='toggleWishlist(this, ' + ${book.book_idx} + ')'" 
+		        th:data-selected="${book.is_selected == 'Y'} ? true : false">
+		    <span th:classappend="${book.is_selected == 'Y'} ? 'heart-icon selected' : 'heart-icon unselected'">❤</span>
+		    <span th:text="${book.is_selected == 'Y'} ? '찜 취소' : '찜하기'"></span>
+		</button>
+        <a th:href="@{/book/edit(book_idx=${book.book_idx})}">
+            <img th:src="@{'/img/' + ${book.book_photo}}" alt="Book Photo">
+        </a>
+    </div>
+    <div class="book-info">
+        <a th:href="@{/book/edit(book_idx=${book.book_idx})}">
+            <h2 th:text="${book.book_name}">Book Name</h2>
+        </a>
+        <p th:text="${book.writer_name} + '/'"></p>
+        <p th:text="${book.publish_company} + '/'"></p>
+        <p th:text="${book.publish_date}"></p>
+        <p class="book-price" th:text="${book.book_price} + '원'"></p>
+        <p class="book-title" th:text="${book.book_title}"></p>
+    </div>
+    <div class="book-actions">
+        <form th:action="@{/cart/insert}" method="post" class="cart-form" style="display:inline;">
+            <input type="hidden" name="book_idx" th:value="${book.book_idx}" />
+            <input type="hidden" name="amount" value="1" />
+            <button class="b2" type="button" onclick="confirmAddToCart(this.form)">장바구니</button>
+        </form>
+        <button class="b2" type="button" th:attr="onclick='directOrder(' + ${book.book_price} + ',' + ${book.book_idx} + ')'">바로구매</button>
+    </div>
+</div>
+
+<br>
+</section>
+<div th:replace="include/bottom::footer"></div>
+</body>
+</html>

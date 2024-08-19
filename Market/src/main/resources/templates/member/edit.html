@@ -1,0 +1,35 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div  th:replace="include/top"></div>
+<section>
+<br>
+<div align="center">
+<h2>회원목록 수정</h2>
+<form action="/member/update" method="get">
+<input type="hidden" name="username" th:value="${m.username}">
+<table>
+<tr><th>아이디</th><th>이름</th><th>전화번호</th><th>주소</th><th>생년월일</th><th>성별</th><th>가입일자</th><th>등급</th><th>특이사항</th></tr>
+<tr th:each="m:${m}">
+<td th:text="${m.username}">
+<td th:text="${m.name}">
+<td th:text="${m.phone}">
+<td th:text="${m.addr2}+' '+${m.addr3}+'('+${m.addr1}+')'">
+<td th:text="${m.birth_year}+'/'+${m.birth_month}+'/'+${m.birth_day}">
+<td th:text="${m.gender}">
+<td th:text="${m.regdate}">
+<td>
+<input type=text name=role th:value="${m.role}">
+</td>
+<td>
+<input type=text name=etc th:value="${m.etc}">
+</td>
+</tr>
+</table>
+<button type="submit" class="submit-button">수정하기</button>
+</form>
+</div>
+<br>
+</section>
+<div  th:replace="include/bottom::footer"></div>
+</body>
+</html>

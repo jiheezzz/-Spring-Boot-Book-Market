@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Book List</title>
+    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="https://cdn.iamport.kr/js/iamport.payment-1.1.7.js"></script>
+    <script th:inline="javascript">
+        function Kdel(bookIdx){
+        	alert("bookIdx:"+bookIdx);
+        	location.href="/book/delete?book_idx="+bookIdx;
+        }
+        
+        function Kupdate(bookIdx){
+        	alert("bookIdx:"+bookIdx);
+        	location.href="/book/manager_edit?book_idx="+bookIdx;
+        }
+    </script>
+</head>
+<body>
+<div th:replace="include/top"></div>
+<section class="container">
+<br>
+<div th:each="book : ${li}" class="book-item">
+    <div class="book-photo">
+            <img th:src="@{'/img/' + ${book.book_photo}}" alt="Book Photo">
+    </div>
+    <div class="book-info">
+            <h2 th:text="${book.book_name}">Book Name</h2>
+        <p th:text="${book.writer_name} + '/'"></p>
+        <p th:text="${book.publish_company} + '/'"></p>
+        <p th:text="${book.publish_date}"></p>
+        <p class="book-price" th:text="${book.book_price} + '원'"></p>
+        <p class="book-title" th:text="${book.book_title}"></p>
+    </div>
+    <div class="book-actions">
+        <form th:action="@{/cart/insert}" method="post" class="cart-form" style="display:inline;">
+            <input type="hidden" name="book_idx" th:value="${book.book_idx}" />
+            <input type="hidden" name="amount" value="1" />
+            <button type="button" th:attr="onclick='Kupdate(' +  ${book.book_idx} + ')'">수정하기</button>
+        </form>
+        <button type="button" th:attr="onclick='Kdel(' +  ${book.book_idx} + ')'">상품삭제</button>
+    </div>
+</div>
+<br>
+</section>
+<div th:replace="include/bottom::footer"></div>
+</body>
+</html>

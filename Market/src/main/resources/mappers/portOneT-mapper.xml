@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "file:///C:/Users/seojihee/Documents/workspace-spring-tool-suite-4-4.24.0/Market/src/main/resources/mybatis-3-mapper.dtd">
+<mapper namespace="com.rubypaper.portoneT.PortOneTDao">
+
+<insert id="insert">
+insert into mpay(idx,mpaynum,membernum,mpaymethod,mpayproduct,mpayprice,mpaydate,mpaygym,mpayperiod,mpaytime,trainername,ggoodsnum,tgoodsint,gymnum,cnt)
+values(book_idx.nextval,#{mpaynum},#{membernum},#{mpaymethod},#{mpayproduct},#{mpayprice},sysdate,#{mpaygym},#{mpayperiod},#{mpaytime},#{trainername},#{ggoodsnum},null,#{gymnum},0)
+</insert>
+
+<select id="select">
+SELECT mpaynum,membernum,mpayproduct,mpayprice,mpaygym,mpaydate,phone,name,addr1,addr2,addr3
+FROM mpay p join member m on m.username=p.membernum where membernum=#{membernum}
+</select>
+
+
+<select id="selectAll">
+SELECT mpaynum,membernum,mpayproduct,mpayprice,mpaygym,mpaydate,phone,name,addr1,addr2,addr3
+FROM mpay p join member m on m.username=p.membernum
+</select>
+
+<insert id="orderinsert">
+insert into order_tbl values(book_idx.nextval,#{amount},#{book_idx})
+</insert>
+</mapper>

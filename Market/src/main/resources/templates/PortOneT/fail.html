@@ -1,0 +1,16 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+<div  th:replace="include/top"></div>
+<section>
+<br>
+<div align="center">
+<h2>이니시스 결제 실패화면</h2>
+<h1 th:text="${fail}"></h1>
+</div>
+<br>
+</section>
+
+<div  th:replace="include/bottom::footer"></div>
+</body>
+</html>

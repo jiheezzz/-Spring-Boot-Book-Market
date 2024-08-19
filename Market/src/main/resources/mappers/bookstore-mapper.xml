@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "file:///C:/Users/seojihee/Documents/workspace-spring-tool-suite-4-4.24.0/Market/src/main/resources/mybatis-3-mapper.dtd">
+<mapper namespace="com.rubypaper.bookstore.BookStoreDao">
+    <insert id="insertBookStore">
+        INSERT INTO bookstores (id, name, address1, address2, address3, address4, latitude, longitude)
+        VALUES (
+            #{id}, 
+            #{name}, 
+            #{address1}, 
+            #{address2, jdbcType=VARCHAR}, 
+            #{address3, jdbcType=VARCHAR}, 
+            #{address4, jdbcType=VARCHAR}, 
+            #{latitude, jdbcType=VARCHAR}, 
+            #{longitude, jdbcType=VARCHAR}
+        )
+    </insert>
+
+    
+<select id="searchBookStores">
+select ROWNUM, K.* 
+from (
+    select rownum as rnum, P.* 
+    from (
+        select * from bookstores 
+        where 1 = 1
+    <if test="keyword != null">
+    <if test="keyword != ''">
+        AND name LIKE '%' || #{keyword} || '%'
+    </if>
+    </if>
+    <if test="address1 != null">
+    <if test="address1 != ''">
+        AND address1 =  #{address1} 
+    </if>
+    </if>
+            <![CDATA[
+         order by latitude
+    ) P
+    where rownum <= #{end}
+) K 
+where rnum >= #{start}
+]]>
+</select>
+
+
+<select id="tc">
+<![CDATA[
+  select  count(*) as tc  from  bookstores 
+  where 1 = 1
+ ]]>
+ <if test="keyword != null">
+ <if test="keyword != ''">
+   and  name like '%' || #{keyword} || '%'
+ </if>
+ </if>
+ <if test="address1 != null">
+ <if test="address1 != ''">
+  and  address1 like '%' || #{address1} || '%'
+ </if>
+ </if>
+</select>
+
+</mapper>

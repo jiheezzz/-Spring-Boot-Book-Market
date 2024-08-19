@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+        }
+
+   		.book-item{
+   			margin-left: 550px;
+   			width: 3000px;
+   		}
+     
+        h1 {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table tr td {
+            padding: 10px;
+        }
+
+        input[type="text"], input[type="file"], textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        textarea {
+            resize: none;
+        }
+
+        input[type="submit"] {
+            width: 100%;
+            background-color: #007bff;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        .bottom-links {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .bottom-links a {
+            color: #007bff;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+
+        .bottom-links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="include/top"></div>
+<section>
+<br>
+<div align="center">
+<div th:each="book : ${m}" class="book-item">
+
+    <form action="/book/update" method="post" enctype="multipart/form-data">
+    <input name="book_idx" type="text" th:value="${book.book_idx}">
+        <table>
+            <tr>
+                <td>책이름</td>
+                <td><input name="book_name" type="text" th:value="${book.book_name}"></td>
+            </tr>
+            <tr>
+                <td>소개글</td>
+                <td><input name="book_title" type="text" th:value="${book.book_title}"></td>
+            </tr>
+            <tr>
+                <td>가격</td>
+                <td><input name="book_price" type="text" th:value="${book.book_price}"></td>
+            </tr>
+            <tr>
+                <td>입고수량</td>
+                <td><input name="new_amount" type="text" th:value="${book.new_amount}"></td>
+            </tr>
+            <tr>
+                <td>작가명</td>
+                <td><input name="writer_name" type="text" th:value="${book.writer_name}"></td>
+            </tr>
+            <tr>
+                <td>출판사</td>
+                <td><input name="publish_company" type="text" th:value="${book.publish_company}"></td>
+            </tr>
+            <tr>
+                <td>출판일</td>
+                <td><input name="publish_date" type="text" th:value="${book.publish_date}"></td>
+            </tr>
+            <tr>
+                <td>사진</td>
+                <td><input name="book_photo_in" type="file"></td>
+            </tr>
+            <tr>
+                <td>내용</td>
+                <td><textarea name="book_etc" cols="100" rows="10">[[${book.book_etc}]]</textarea></td>
+            </tr>
+            <tr>
+                <td colspan="2" align="center"><input type="submit" value="수정하기"></td>
+            </tr>
+            
+        </table>
+    </form>
+</div>
+</div>
+<br>
+</section>
+<div th:replace="include/bottom::footer"></div>
+</body>
+</html>

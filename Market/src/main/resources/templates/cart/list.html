@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="https://cdn.iamport.kr/js/iamport.payment-1.1.8.js"></script>
+</head>
+<body>
+<div th:replace="include/top"></div>
+<section class="cart-container">
+    <br>
+    <h2>장바구니</h2>
+    <br>
+    <div class="cart-list">
+        <div class="cart-item" th:each="item : ${li}">
+            <div class="cart-item-details">
+                <div class="cart-item-photo">
+                    <a th:href="@{/book/details(book_idx=${item.book_idx})}">
+                        <img th:src="@{/img/{item.book_photo}(item.book_photo=${item.book_photo})}" alt="Book Photo">
+                    </a>
+                </div>
+                <div class="cart-item-info">
+                    <h3 th:text="${item.book_name}">책 제목</h3>
+                    <div class="cart-item-price">
+                        <span th:text="${item.book_price} + '원'">가격</span>
+                        <div class="cart-item-quantity">
+                            <input type="number" th:value="${item.amount}" min="0" class="item-amount"
+                                   th:data-item-idx="${item.cart_id}" th:data-price="${item.book_price}" 
+                                   th:data-book-idx="${item.book_idx}" />
+                            <input type="hidden" th:onclick="updateQuantity(${item.cart_id})">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="cart-summary">
+        <div class="summary-item">
+            <span>상품 금액</span>
+            <div id="totalProductPrice">0원</div>
+        </div>
+        <div class="summary-item">
+            <span>배송비</span>
+            <div id="shippingCost">0원</div>
+        </div>
+        <div class="summary-item">
+            <span>상품 할인</span>
+            <div id="discountAmount">0원</div>
+        </div>
+        <div class="summary-total">
+            <span>결제 예정 금액</span>
+            <div id="totalPaymentAmount">0원</div>
+        </div>
+        <div class="cart-actions">
+            <form id="orderForm" name=f1>
+                <button type="button" onclick="submitOrder()">주문하기</button>
+            </form>
+        </div>
+    </div>
+    <br>
+</section>
+<div th:replace="include/bottom::footer"></div>
+<script th:inline="javascript">
+jQuery.ajaxSetup({cache:false});
+
+document.addEventListener('DOMContentLoaded', function() {
+    calculateTotals();
+
+    // 수량 변경 이벤트 리스너 추가
+    document.querySelectorAll('.item-amount').forEach(function(input) {
+        input.addEventListener('change', function() {
+            if (parseInt(input.value) === 0) {
+                if (confirm('수량이 0이 되었습니다. 삭제하시겠습니까?')) {
+                    var cartIdx = input.getAttribute('data-item-idx');
+                    location.href = "/cart/delete?cart_id=" + cartIdx;
+                } else {
+                    input.value = 1; // 취소하면 수량을 1로 되돌림
+                }
+            }
+            calculateTotals();
+        });
+    });
+});
+
+    var totalPaymentAmount;
+
+    function calculateTotals() {
+        var totalProductPrice = 0;
+        var totalItems = 0;
+
+        document.querySelectorAll('.cart-item').forEach(function(item) {
+            var amountInput = item.querySelector('.item-amount');
+            
+            if (amountInput) {
+                var price = parseFloat(amountInput.getAttribute('data-price'));
+                var amount = parseInt(amountInput.value, 10);
+
+                totalProductPrice += price * amount;
+                totalItems += amount;
+            }
+        });
+        // 배송비 계산: 상품이 하나라도 있으면 25원
+        var shippingCost = totalItems > 0 ? 25 : 0;
+        // 총 가격이 일정 금액 이상일 경우 할인 적용
+        var discountAmount = totalProductPrice >= 500 ? 25 : 0;
+        // 최종 결제 금액 계산
+        totalPaymentAmount = totalProductPrice - discountAmount + shippingCost;
+        // 계산된 값들을 HTML에 표시
+        document.getElementById('totalProductPrice').textContent = totalProductPrice.toLocaleString() + '원';
+        document.getElementById('shippingCost').textContent = shippingCost.toLocaleString() + '원';
+        document.getElementById('discountAmount').textContent = discountAmount.toLocaleString() + '원';
+        document.getElementById('totalPaymentAmount').textContent = totalPaymentAmount.toLocaleString() + '원';
+    }
+    
+    var membernum = /*[[${session.username}]]*/ '';
+
+    function submitOrder() {
+        if (confirm('정말로 주문하시겠습니까?')) {
+            totalPaymentAmount = parseFloat(document.getElementById('totalPaymentAmount').
+            		textContent.replace('원', '').replace(/,/g, ''));
+
+            var IMP = window.IMP;
+            IMP.init('imp66012655'); // 가맹점 식별코드
+
+            $.get('/PortOneT/generateMpaynum', function(mpaynum) {
+                if (!mpaynum) {
+                    alert('mpaynum을 생성하는 데 실패했습니다.');
+                    return;
+                }
+                
+                // 수량과 book_id를 폼 데이터로 수집
+                var cartItems = [];
+                document.querySelectorAll('.cart-item').forEach(function(item) {
+                    var amount = item.querySelector('.item-amount').value;
+                    var bookIdx = item.querySelector('.item-amount').getAttribute('data-book-idx');
+                    cartItems.push(bookIdx + "," + amount); // book_idx와 amount를 콤마로 구분
+                });
+                var cartItemsJson = JSON.stringify(cartItems);
+                IMP.request_pay({
+                    pg: "html5_inicis",
+                    pay_method: "card",
+                    merchant_uid: mpaynum,
+                    name: "서지희",
+                    amount: totalPaymentAmount,
+                    buyer_email: "wlgml625@naver.com",
+                    buyer_name: "서지희",
+                    buyer_tel: "01034471872"
+                }, function (rsp) {
+                    if (rsp.success) {
+                        var result = {
+                            mpaynum: mpaynum,
+                            membernum: membernum,
+                            mpaymethod: rsp.pay_method,
+                            mpayproduct: "도서",
+                            mpayprice: totalPaymentAmount,
+                            mpaydate: new Date().toISOString().slice(0, 10),
+                            mpaygym: "책 쇼핑몰",
+                            mpayperiod: 3,
+                            mpaytime: "11",
+                            trainername: "11",
+                            ggoodsnum: "1001",
+                            tgoodsint: null,
+                            gymnum: "7001",
+                            order: cartItemsJson 
+                        };
+                        alert("Result: " + JSON.stringify(result));
+                        $.ajax({
+                            url: '/PortOneT/insertMPay',
+                            type: 'POST',
+                            contentType: 'application/json',
+                            data: JSON.stringify(result),
+                            success: function (res) {
+                                console.log("결제 성공 응답: ", res);  // 디버깅용 로그 추가
+                                if (res === "/PortOneT/fail") {
+                                    alert("결제 실패: 서버에서 결제가 실패로 처리되었습니다.");
+                                    location.href = '/PortOneT/fail';
+                                } else {
+                                    alert("결제 성공: " + res);  // 결제 성공 메시지 출력
+                                    location.href = res;
+                                }
+                            },
+                            error: function (err) {
+                                console.error("에러 발생:", err);  // 에러 메시지를 콘솔에 출력
+                                alert("에러 발생: " + JSON.stringify(err));
+                                location.href = '/PortOneT/fail';
+                            }
+                        });
+                    } else {
+                        alert('결제 실패: ' + rsp.error_msg);
+                        location.href = '/PortOneT/fail';
+                    }
+                });
+            }).fail(function(jqXHR, textStatus, errorThrown) {
+                alert('mpaynum 생성 요청 실패: ' + textStatus + ', ' + errorThrown);
+            });
+        }
+    }
+</script>
+</body>
+</html>

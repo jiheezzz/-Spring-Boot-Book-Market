@@ -1,0 +1,28 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div  th:replace="include/top"></div>
+<section>
+<br>
+<div align="center">
+<h2>회원목록</h2>
+<table>
+<tr><th>아이디</th><th>이름</th><th>전화번호</th><th>주소</th><th>생년월일</th><th>성별</th><th>등급</th><th>특이사항</th><th>가입일자</th><th>수정하기</th></tr>
+<tr th:each="m:${li}">
+<td th:text="${m.username}">
+<td th:text="${m.name}">
+<td th:text="${m.phone}">
+<td th:text="${m.addr2}+' '+${m.addr3}+'('+${m.addr1}+')'">
+<td th:text="${m.birth_year}+'/'+${m.birth_month}+'/'+${m.birth_day}">
+<td th:text="${m.gender}">
+<td th:text="${m.role}">
+<td th:text="${m.etc}">
+<td th:text="${m.regdate}">
+<td><a th:href="@{/member/edit(username=${m.username})}" >등급/특이사항 수정</a></td>
+</tr>
+</table>
+</div>
+<br>
+</section>
+<div  th:replace="include/bottom::footer"></div>
+</body>
+</html>

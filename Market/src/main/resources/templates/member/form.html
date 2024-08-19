@@ -1,0 +1,259 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+<Script>
+
+jQuery.ajaxSetup({cache:false});
+$(document).ready( function(){
+	  $('#idCkeck').click( function(){
+		 		 
+		  alert("확인:" + $('#username').val());
+		  var  dataStr={
+				id  : $('#username').val()		
+		  };
+		  $.ajax({
+			  type: "GET",
+			  url : "http://127.0.0.1:8000/member/ck",
+			  data : dataStr,
+			  success: function (data){
+			    alert("확인2:" + data);   
+			    if (data == 0){
+			    	alert("사용가능한 ID 입니다.");
+			    }else{
+			    	alert("중복 ID 입니다.");
+			    	$('#username').val("");
+			    	$('#username').focus();			    	
+			    }			  
+			  }	 
+		  }) 
+	  } )    
+})
+ 
+</Script>
+<body>
+<div  th:replace="include/top"></div>
+<section>
+<br>
+  <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .form-container {
+            max-width: 900px; /* 폼의 최대 너비 */
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table td {
+            padding: 10px;
+            vertical-align: middle;
+            text-align: left; /* 텍스트를 왼쪽 정렬 */
+        }
+
+        table td:first-child {
+            width: 180px; /* 첫 번째 열의 너비 */
+            font-weight: bold;
+            padding-right: 20px;
+        }
+
+        table td input[type="text"],
+        table td input[type="password"],
+        table td select {
+            width: calc(100% - 110px); /* 입력 필드와 버튼이 맞도록 설정 */
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+            text-align: left; /* 입력 필드 내 텍스트를 왼쪽 정렬 */
+        }
+
+        table td input[type="button"] {
+            padding: 7px 14px; /* 버튼 크기 조정 */
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px; /* 버튼과 입력 필드 사이의 간격 */
+        }
+
+        table td input[type="button"]:hover {
+            background-color: #0056b3;
+        }
+
+        .form-actions {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .form-actions input[type="submit"],
+        .form-actions input[type="reset"] {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .form-actions input[type="submit"] {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .form-actions input[type="reset"] {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .form-actions input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        .form-actions input[type="reset"]:hover {
+            background-color: #5a6268;
+        }
+
+        /* Additional styling for radio buttons and checkboxes */
+        .checkbox-group, .radio-group {
+            display: flex;
+            align-items: center;
+        }
+
+        .checkbox-group label, .radio-group label {
+            margin-left: 10px;
+        }
+
+        .small-text {
+            font-size: 0.9em;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <h2>회원가입</h2>
+    <form name="f1" action="/member/insert" method="post">
+        <table>
+            <tr>
+                <td>아이디</td>
+                <td>
+                    <input type="text" name="username" id="username">
+                    <input type="button" id="idCkeck" value="중복확인">
+                </td>
+            </tr>
+            <tr>
+                <td>비밀번호(평문)</td>
+                <td><input type="password" name="password"></td>
+            </tr>
+            <tr>
+                <td>이름</td>
+                <td><input type="text" name="name"></td>
+            </tr>
+            <tr>
+                <td>전화번호</td>
+                <td><input type="text" name="phone"></td>
+            </tr>
+            <tr>
+                <td>주소</td>
+                <td>
+                    <input type="text" id="sample6_address" name="addr2">
+                    <input type="button" onclick="sample6_execDaumPostcode()" value="주소찾기">
+                </td>
+            </tr>
+            <tr>
+                <td>우편번호</td>
+                <td><input type="text" id="sample6_postcode" name="addr1"></td>
+            </tr>
+            <tr>
+                <td>상세주소</td>
+                <td><input type="text" id="sample6_detailAddress" name="addr3"></td>
+            </tr>
+            <tr>
+                <td>년도</td>
+                <td><input type="text" name="birth_year"></td>
+            </tr>
+            <tr>
+                <td>월</td>
+                <td><input type="text" name="birth_month"></td>
+            </tr>
+            <tr>
+                <td>일</td>
+                <td><input type="text" name="birth_day"></td>
+            </tr>
+            <tr>
+                <td>성별</td>
+                <td>
+                    <select name="gender">
+                        <option value="">성별</option>
+                        <option value="남">남</option>
+                        <option value="여">여</option>
+                    </select>
+                </td>
+            </tr>
+        </table>
+        <div class="form-actions">
+            <input type="submit" value="가입하기">
+            <input type="reset" value="다시쓰기">
+        </div>
+    </form>
+</div>
+  <br>  
+</section>
+
+
+<input type="hidden" id="sample6_extraAddress" placeholder="참고항목">
+<div  th:replace="include/bottom::footer"></div>
+</body>
+</html>
+
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script>
+    function sample6_execDaumPostcode() {
+        new daum.Postcode({
+            oncomplete: function(data) {
+                var addr = ''; 
+                var extraAddr = ''; 
+                if (data.userSelectedType === 'R') {
+                    addr = data.roadAddress;
+                } else { 
+                    addr = data.jibunAddress;
+                }
+                if(data.userSelectedType === 'R'){
+                    if(data.bname !== '' && /[동|로|가]$/g.test(data.bname)){
+                        extraAddr += data.bname;
+                    }
+                    if(data.buildingName !== '' && data.apartment === 'Y'){
+                        extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+                    }
+                    if(extraAddr !== ''){
+                        extraAddr = ' (' + extraAddr + ')';
+                    }
+                    document.getElementById("sample6_extraAddress").value = extraAddr;
+                } else {
+                    document.getElementById("sample6_extraAddress").value = '';
+                }
+                // 우편번호와 주소 정보를 해당 필드에 넣습니다.
+                document.getElementById('sample6_postcode').value = data.zonecode;
+                document.getElementById("sample6_address").value = addr;
+                // 상세주소 필드로 포커스를 이동합니다.
+                document.getElementById("sample6_detailAddress").focus();
+            }
+        }).open();
+    }
+</script>

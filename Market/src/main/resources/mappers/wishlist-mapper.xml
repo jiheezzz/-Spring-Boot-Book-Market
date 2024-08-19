@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "file:///C:/Users/seojihee/Documents/workspace-spring-tool-suite-4-4.24.0/Market/src/main/resources/mybatis-3-mapper.dtd">
+<mapper namespace="com.rubypaper.wishlist.WishListDao">
+<select id="select">
+SELECT
+      w.id AS id,
+      b.book_idx AS book_idx,
+      b.book_name AS book_name,
+      b.writer_name AS writer_name,
+      b.publish_company AS publish_company,
+      b.publish_date AS publish_date,
+      b.book_price AS book_price,
+      b.book_photo AS book_photo,
+      w.created_at AS createdAt
+    FROM wishlist w
+    INNER JOIN book b ON w.book_id = b.book_idx
+    WHERE w.user_id = #{user_id}
+  </select>
+
+<insert id="insert" >
+    INSERT INTO wishlist (id, user_id, book_id,is_selected)
+    VALUES (book_idx.nextval, #{user_id}, #{book_id},'Y')
+</insert>
+
+<delete id="remove">
+    DELETE FROM wishlist WHERE user_id = #{user_id} AND book_id = #{book_id}
+</delete>
+
+<select id="isBookInWishlist" resultType="boolean">
+    SELECT COUNT(*) FROM wishlist WHERE user_id = #{user_id} AND book_id = #{book_id}
+</select>
+
+
+
+
+</mapper>

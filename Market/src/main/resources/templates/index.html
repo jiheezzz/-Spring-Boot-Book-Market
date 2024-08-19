@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const slider = document.querySelector('.slides');
+    const prevButton = document.querySelector('.slider-button.left');
+    const nextButton = document.querySelector('.slider-button.right');
+    const indicatorsContainer = document.querySelector('.indicators');
+    let currentIndex = 0;
+    const slideCount = slider.children.length;
+    const slideWidth = 690; // 슬라이더의 너비를 맞춰주세요.
+    const slideIntervalTime = 3500; // 3.5초 간격으로 설정
+    let slideInterval;
+
+    // 인디케이터 생성
+    const createIndicators = () => {
+        for (let i = 0; i < slideCount; i++) {
+            const indicator = document.createElement('div');
+            indicator.classList.add('indicator');
+            indicator.addEventListener('click', () => {
+                currentIndex = i;
+                showSlide(currentIndex);
+                updateIndicators();
+                startSlideInterval(); // 버튼 클릭 시 자동 슬라이드 타이머 재설정
+            });
+            indicatorsContainer.appendChild(indicator);
+        }
+    };
+
+    const showSlide = (index) => {
+        slider.style.transform = `translateX(-${index * slideWidth}px)`;
+        updateIndicators(); // 슬라이드 전환 시 인디케이터 업데이트
+    };
+
+    const nextSlide = () => {
+        currentIndex = (currentIndex + 1) % slideCount;
+        showSlide(currentIndex);
+    };
+
+    const prevSlide = () => {
+        currentIndex = (currentIndex - 1 + slideCount) % slideCount;
+        showSlide(currentIndex);
+    };
+
+    const updateIndicators = () => {
+        const indicators = document.querySelectorAll('.indicator');
+        indicators.forEach((indicator, index) => {
+            indicator.classList.toggle('active', index === currentIndex);
+        });
+    };
+
+    const startSlideInterval = () => {
+        clearInterval(slideInterval);
+        slideInterval = setInterval(nextSlide, slideIntervalTime);
+    };
+
+    // 자동 슬라이드 시작
+    createIndicators(); // 인디케이터 생성
+    startSlideInterval();
+
+    // 버튼 클릭 이벤트
+    nextButton.addEventListener('click', () => {
+        nextSlide();
+        startSlideInterval(); // 버튼 클릭 시 자동 슬라이드 타이머 재설정
+    });
+
+    prevButton.addEventListener('click', () => {
+        prevSlide();
+        startSlideInterval(); // 버튼 클릭 시 자동 슬라이드 타이머 재설정
+    });
+});
+</script>
+<style>
+/* Flexbox Container for Slider and Best List */
+.content-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 50px;
+}
+
+/* index 이미지 슬라이드 */
+.slider {
+    width: 690px; /* 슬라이더의 너비 */
+    height: 310px; /* 슬라이더의 높이 */
+    overflow: hidden; /* 이미지가 박스 바깥으로 나가지 않도록 함 */
+    position: relative; /* 슬라이드 위치 조정을 위함 */
+    margin-right: 50px; /* 슬라이더와 Best List 사이의 간격 */
+}
+
+.slides {
+    width: 100%; /* 부모 요소와 동일한 너비 */
+    height: 100%; /* 부모 요소와 동일한 높이 */
+    display: flex; /* 이미지를 가로로 나열 */
+    transition: transform 1.0s ease-in-out; /* 부드러운 전환 효과 */
+}
+
+.slides img {
+    width: 100%; /* 슬라이더 너비에 맞게 조정 */
+    height: 310px; /* 슬라이더 높이에 맞게 조정 */
+    object-fit: cover; /* 이미지가 박스에 꽉 차도록 조정하되, 비율 유지 */
+}
+
+/* 좌우 버튼 스타일링 */
+.slider-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    z-index: 1000;
+}
+
+.slider-button.left {
+    left: 10px;
+}
+
+.slider-button.right {
+    right: 10px;
+}
+
+/* 인디케이터 스타일링 */
+.indicators {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+}
+
+.indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.indicator.active {
+    background-color: white;
+}
+
+/* Best List Styling */
+.best-list {
+    width: 300px; /* Best List의 너비 */
+    border: 1px solid #ddd;
+    background-color: #f9f9f9;
+    padding: 10px; /* 내부 패딩 추가 */
+    height:315px;
+
+    
+}
+
+.best-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.best-item img {
+    width: 60px;
+    height: 80px;
+    object-fit: cover;
+    margin-right: 10px;
+}
+
+.best-item h3 {
+    font-size: 16px;
+    margin: 0;
+    line-height: 1.2;
+}
+
+.best-item a {
+    text-decoration: none;
+    color: black;
+}
+
+.best-item a:hover {
+    color: blue;
+}
+
+.best-item p {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+}
+
+.best-item .book-price {
+    color: #d9534f;
+    font-weight: bold;
+    font-size: 14px;
+    margin-top: 5px;
+}
+</style>
+<body>
+<div th:replace="include/top"></div>
+<section>
+
+<!-- Flexbox Container for Slider and Best List -->
+<div class="content-wrapper">
+    <!-- 이미지 슬라이드 -->
+    <div class="slider">
+        <button class="slider-button left">&#10094;</button> <!-- 왼쪽 버튼 -->
+        <div class="slides">
+            <img src="/img/광고1.jpg" width="930" height="310">
+            <img src="/img/광고2.jpg" width="930" height="310">
+            <img src="/img/광고3.jpg" width="930" height="310">
+        </div>
+        <button class="slider-button right">&#10095;</button> <!-- 오른쪽 버튼 -->
+        <div class="indicators">
+            <!-- JavaScript로 동적으로 생성될 인디케이터가 들어갈 자리 -->
+        </div>
+    </div>
+    <!-- 이미지 슬라이드 끝 -->
+
+    <!-- Best List 시작 -->
+    <section class="best-list">
+        <div th:each="book, iterStat : ${li}" class="best-item">
+            <img th:src="@{/img/{book.book_photo}(book.book_photo=${book.book_photo})}" alt="Book Photo">
+            <div>
+                <a th:href="@{/book/edit(book_idx=${book.book_idx})}">
+                    <h3 th:text="${book.book_name}">Book Name</h3>
+                </a>
+                <p th:text="${book.writer_name}">Author</p>
+                <p class="book-price" th:text="${book.book_price} + '원'">15,000원</p>
+            </div>
+        </div>
+    </section>
+    <!-- Best List 끝 -->
+</div>
+
+</section>
+<div th:replace="include/bottom::footer"></div>
+</body>
+</html>

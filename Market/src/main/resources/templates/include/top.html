@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/css/css.css"> <!-- 여기에 위의 CSS 파일 경로를 지정 -->
+</head>
+<body>
+    <header>
+        <div class="logo">BAROVONE</div>
+        &emsp;
+        <a th:href="@{/api/bookstores/search(start=1, end=15)}">서점보기</a>
+        <div class="search-bar">
+		    <form action="/book/list" method="GET" style="display: flex; align-items: center; position: relative; max-width: 600px; margin: 0 auto;">
+		        <input class="search-input" type="text" name="ch2" placeholder="제목을 검색하세요">
+		        <button type="submit" class="search-button">
+		            <img src="https://img.icons8.com/ios-filled/50/000000/search.png" alt="Search" style="width: 20px; height: 20px;">
+		        </button>
+		    </form>
+		</div>
+
+<style>
+    .search-bar {
+        margin-top: 20px;
+        display: flex;
+        justify-content: center;
+        margin-left: 100px;
+    }
+
+    .search-input {
+        width: 100%;
+        height: 40px;
+        padding: 0 15px;
+        border: 2px solid #007bff;
+        border-radius: 25px;
+        font-size: 16px;
+        outline: none;
+        box-sizing: border-box;
+    }
+
+    .search-input::placeholder {
+        color: #aaa;
+    }
+
+    .search-button {
+        background-color: transparent;
+        border: none;
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        outline: none;
+    }
+
+    .search-button img {
+        width: 20px;
+        height: 20px;
+        margin-right: 190px;
+    }
+
+    .search-input:focus {
+        border-color: #0056b3;
+    }
+
+    .search-bar form {
+        width: 100%;
+    }
+</style>
+
+
+
+
+        <div class="user-actions">
+        	<div class=login-logout>
+            <span sec:authorize="isAnonymous()">
+		        <a href="/login/form">Login</a>
+		        <a href="/member/form">회원가입</a>
+	   		</span>
+	   		<span sec:authorize="isAuthenticated()">
+		        <a href="/login/logout">Logout</a>
+		    </span>
+	   		</div>
+            <a href="/wishlist/select"><img src="/img/icon_1.png" alt="찜목록"></a>
+            <a href="/member/mypage"><img src="/img/icon_2.png" alt="마이페이지"></a>
+            <a href="/cart/list"><img src="/img/cart-icon.png" alt="장바구니">0</a> <!-- 장바구니 아이콘과 수량 -->
+        </div>
+    </header>
+   <nav>	
+   		<span sec:authorize="isAuthenticated()">
+        <a href="#" class="dropdown-btn" onclick="toggleDropdown()">카테고리</a>
+        &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+        &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+        <div class="dropdown-content" id="dropdownContent">
+            <ul>
+                <li class="dropdown-submenu">
+                    <a href="#">소설</a>
+                    <div class="dropdown-subcontent">
+                        <ul>
+                            <li><a href="/book/categories?name=현대 소설">현대 소설</a></li>
+                            <li><a href="/book/categories?name=고전 소설">고전 소설</a></li>
+                            <li><a href="/book/categories?name=공상 과학 소설">공상 과학 소설</a></li>
+                            <li><a href="/book/categories?name=판타지">판타지</a></li>
+                            <li><a href="/book/categories?name=미스터리스릴러">미스터리/스릴러</a></li>
+                            <li><a href="/book/categories?name=로맨스">로맨스</a></li>
+                        </ul>
+                    </div>
+                </li>
+                <li class="dropdown-submenu">
+                    <a href="#">비소설</a>
+                    <div class="dropdown-subcontent">
+                        <ul>
+                            <li><a href="/book/categories?name=자기계발">자기계발</a></li>
+                            <li><a href="/book/categories?name=역사">역사</a></li>
+                            <li><a href="/book/categories?name=과학">과학</a></li>
+                            <li><a href="/book/categories?name=예술">예술</a></li>
+                            <li><a href="/book/categories?name=철학">철학</a></li>
+                            <li><a href="/book/categories?name=사회">사회</a></li>
+                            <li><a href="/book/categories?name=경제경영">경제/경영</a></li>
+                        </ul>
+                    </div>
+                </li>
+                <li class="dropdown-submenu">
+                    <a href="/book/categories?name=아동청소년">아동/청소년</a>
+                </li>
+                <!-- Add more categories here if needed -->
+            </ul>
+        </div>
+        </span>
+	<span sec:authorize="hasRole('ROLE_ADMIN')">
+        <a href="/book/form">상품등록</a> &emsp;&emsp;
+        <a href="/book/manager_list">매니저리스트</a> &emsp;&emsp;
+        <a href="/member/list">회원목록</a> &emsp;&emsp;
+        <a href="/PortOneT/orderAll">회원전체결제</a> &emsp;&emsp;
+    </span>
+    <span sec:authorize="hasRole('ROLE_USER')">
+        <a href="/PortOneT/order">결제내역</a> &emsp;&emsp;
+    </span>
+    <span sec:authorize="isAuthenticated()">
+    	<a href="/book/list">전체상품</a> &emsp;&emsp;
+        <a href="/book/newList">신상품</a> &emsp;&emsp;
+         <a href="/book/bestList">베스트</a> &emsp;&emsp;
+        <a href="/chatBot/chatBot">chatBot</a> &emsp;&emsp;
+    </span>
+    <a href="/index">홈으로</a>
+    &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+    &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+    &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+</nav>
+
+<script>
+function toggleDropdown() {
+    const dropdown = document.getElementById('dropdownContent');
+    if (dropdown.style.display === 'none' || dropdown.style.display === '') {
+        dropdown.style.display = 'block';
+    } else {
+        dropdown.style.display = 'none';
+    }
+}
+
+</script>
